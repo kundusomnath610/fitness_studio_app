@@ -21,5 +21,6 @@ from .views import home_page
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', home_page),
-    path('get/', include('booking_api.urls'))
+    path('get/', include('booking_api.urls')),
+    path('post/', include('booking_api.urls'))
 ]

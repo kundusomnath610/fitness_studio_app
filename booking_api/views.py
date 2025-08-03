@@ -13,19 +13,19 @@ class FitnessClassViewSet(viewsets.ModelViewSet):
     queryset = Fitness.objects.all()
     serializer_class = FitnessClassSerializers
 
-#     def list(self, request, *args, **kwargs):
-#         tz_str = request.GET.get('tz', 'Asia/Kolkata')
-#         try:
-#             tz = pytz.timezone(tz_str)
-#         except pytz.UnknownTimeZoneError:
-#             return Response({"error": "Invalid timezone"}, status=400)
+    def list(self, request, *args, **kwargs):
+        tz_str = request.GET.get('tz', 'Asia/Kolkata')
+        try:
+            tz = pytz.timezone(tz_str)
+        except pytz.UnknownTimeZoneError:
+            return Response({"error": "Invalid timezone"}, status=400)
 
-#         classes = self.get_queryset()
-#         serializer = self.get_serializer(classes, many=True)
-#         data = serializer.data
-#         for item, instance in zip(data, classes):
-#             item['date'] = instance.date.astimezone(tz).strftime('%Y-%m-%d %H:%M:%S %Z')
-#         return Response(data)
+        classes = self.get_queryset()
+        serializer = self.get_serializer(classes, many=True)
+        data = serializer.data
+        for item, instance in zip(data, classes):
+            item['date'] = instance.date.astimezone(tz).strftime('%Y-%m-%d %H:%M:%S %Z')
+        return Response(data)
     
 class BookingClassViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()

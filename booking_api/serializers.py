@@ -9,5 +9,5 @@ from booking_api.models import Fitness
 class FitnessClassSerializers(serializers.ModelSerializer):
     class Meta:
         model = Fitness
-        field = '__all__'
+        fields = '__all__'
 

@@ -4,7 +4,7 @@ from django.db import models
 #---------------------------
 
 # Create the schema for Fitness Class Booking.
-class FitnessClass(models.Model):
+class Fitness(models.Model):
     CLASS_TYPES = [
         ('Yoga', 'Yoga'),
         ('Zumba', 'Zumba'),

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from booking_api.models import Fitness, Booking
 from booking_api.serializers import FitnessClassSerializers, BookingClassSerializers
 from rest_framework.response import Response
@@ -33,35 +33,51 @@ class BookingClassViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = request.data
-        required = ['class_id', 'client_name', 'client_email']
-        if not all(field in data for field in required):
-            return Response({"error": "Missing required fields"}, status=400)
+
+        # Use class_id to fetch fitness instance
+        class_id = data.get("class_id")
+        if not class_id or not data.get("client_name") or not data.get("client_email"):
+            return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            fitness = Fitness.objects.get(id=data['class_id'])
+            fitness = Fitness.objects.get(id=class_id)
         except Fitness.DoesNotExist:
-            return Response({"error": "Class not found"}, status=404)
+            return Response({"error": "Class not found"}, status=status.HTTP_404_NOT_FOUND)
 
         if fitness.available_slots <= 0:
-            return Response({"error": "No slots available"}, status=409)
+            return Response({"error": "No slots available"}, status=status.HTTP_409_CONFLICT)
 
+        # Create booking manually and map to serializer
         booking = Booking.objects.create(
             fitness=fitness,
             client_name=data['client_name'],
             client_email=data['client_email']
         )
 
-        booking.refresh_from_db()
-
         fitness.available_slots -= 1
         fitness.save()
-        return Response(BookingClassSerializers(booking).data, status=201)
-    
-    # Custom Url filter By email 
+
+        booking.refresh_from_db()  # To populate booked_at
+
+        serializer = BookingClassSerializers(booking)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    # Custom Url filter By Client_email and Client_name using @action Decorator
     @action(detail=False, methods=['get'])
-    def by_email(self, request):
-        email = request.GET.get('email')
-        if not email:
-            return Response({"error": "Email parameter required"}, status=400)
-        bookings = Booking.objects.filter(client_email=email)
+    def search(self, request):
+        name = request.GET.get('client_name')
+        email = request.GET.get('client_email')
+        """
+            Filter Store as a dictonary with Key And Value pair
+        """
+        filters = {}
+        if name:
+            filters['client_name__icontains'] = name
+        if email:
+            filters['client_email__iexact'] = email
+
+        if not filters:
+            return Response({"error": "Provide at least client_name or client_email"}, status=400)
+
+        bookings = Booking.objects.filter(**filters)
         return Response(BookingClassSerializers(bookings, many=True).data)

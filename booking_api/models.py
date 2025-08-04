@@ -26,7 +26,7 @@ class Booking(models.Model):
     fitness = models.ForeignKey(Fitness, on_delete=models.CASCADE)
     client_name = models.CharField(max_length=100)
     client_email = models.EmailField()
-    booked_at = models.DateTimeField(auto_now_add=True)
+    booked_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.client_name} booked {self.fitness.name}"

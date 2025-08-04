@@ -29,7 +29,7 @@ class FitnessClassViewSet(viewsets.ModelViewSet):
         return Response(data)
     
 class BookingClassViewSet(viewsets.ModelViewSet):
-    queryset = Booking.objects.all()
+    queryset = Booking.objects.all() # fetch all data from database using all() Method
     serializer_class = BookingClassSerializers
 
     def create(self, request, *args, **kwargs):
@@ -64,8 +64,8 @@ class BookingClassViewSet(viewsets.ModelViewSet):
     # Custom Url filter By Client_email and Client_name using @action Decorator
     @action(detail=False, methods=['get'])
     def search(self, request):
-        name = request.GET.get('client_name')
-        email = request.GET.get('client_email')
+        name = request.GET.get('client_name') # finding the client_name
+        email = request.GET.get('client_email') # finding the Client_email
         """
             Filter Store as a dictonary with Key And Value pair
         """
@@ -78,5 +78,5 @@ class BookingClassViewSet(viewsets.ModelViewSet):
         if not filters:
             return Response({"error": "Provide at least client_name or client_email"}, status=400)
 
-        bookings = Booking.objects.filter(**filters)
+        bookings = Booking.objects.filter(**filters) # here use **kwargs for stroing data in dict Mode
         return Response(BookingClassSerializers(bookings, many=True).data)

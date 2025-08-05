@@ -1,0 +1,7 @@
+# requirements.txt
+# This file contains the required packages and dependencies for the fitness studio application
+
+Django>=5.2.4
+djangorestframework>=3.16.0
+pytz>=2023.3
+pytest>=8.4.1

@@ -19,8 +19,8 @@ from django.urls import path, include
 from .views import home_page
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('home/', home_page),
-    path('get/', include('booking_api.urls')),
+    path('admin/', admin.site.urls), # Admin site URL
+    path('home/', home_page), # Home page URL
+    path('get/', include('booking_api.urls')), # Include Class booking API URLs
     path('post/', include('booking_api.urls'))
 ]
